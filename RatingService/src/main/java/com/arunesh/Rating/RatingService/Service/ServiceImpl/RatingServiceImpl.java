@@ -1,5 +1,6 @@
 package com.arunesh.Rating.RatingService.Service.ServiceImpl;
 
+import com.arunesh.Rating.RatingService.Entity.Hotel;
 import com.arunesh.Rating.RatingService.Entity.Rating;
 import com.arunesh.Rating.RatingService.Exception.RatingNotFoundException;
 import com.arunesh.Rating.RatingService.Repository.RatingRepository;
@@ -8,14 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class RatingServiceImpl implements RatingService {
     @Autowired
     RatingRepository ratingRepository;
+    @Autowired
+    RestTemplate restTemplate;
 
     @Override
     public ResponseEntity<List<Rating>> getAllRatings() {
@@ -42,5 +48,25 @@ public class RatingServiceImpl implements RatingService {
             return new ResponseEntity<>("Rating not saved : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Rating Saved", HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<List<Rating>> getRatingByUserId(UUID id) {
+        try {
+            List<Rating> rating = ratingRepository.findAllByUserId(id);
+            if(!rating.isEmpty()) {
+                List<Rating> ratingWithHotel = rating.stream().map((R) -> {
+                    R.setHotel(restTemplate.getForEntity("http://HOTEL-SERVICE/hotel/" + R.getHotelId(),
+                            Hotel.class
+                    ).getBody());
+                    return R;
+                }).toList();
+                return new ResponseEntity<>(ratingWithHotel, HttpStatus.OK);
+            }
+            else
+                return new ResponseEntity<>(rating,HttpStatus.OK);
+        }catch (RuntimeException ex){
+            throw new RatingNotFoundException("Rating not Available : " + ex.getMessage());
+        }
     }
 }
