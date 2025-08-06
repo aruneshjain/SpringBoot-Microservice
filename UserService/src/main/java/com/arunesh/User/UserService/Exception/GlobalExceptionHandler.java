@@ -20,6 +20,14 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
+    @ExceptionHandler({ResourceNotFoundException.class})
+    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex){
+        ErrorResponse error = new ErrorResponse("Not Found", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
+
 //    @ExceptionHandler({JwtInvalid.class})
 //    public ResponseEntity<Object> handleJwtInvalid(JwtInvalid ex){
 //        return ResponseEntity

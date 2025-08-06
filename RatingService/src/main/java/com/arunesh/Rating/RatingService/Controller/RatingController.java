@@ -2,6 +2,7 @@ package com.arunesh.Rating.RatingService.Controller;
 
 import com.arunesh.Rating.RatingService.Entity.Rating;
 import com.arunesh.Rating.RatingService.Service.RatingService;
+import jakarta.ws.rs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +29,10 @@ public class RatingController {
     @PostMapping
     public ResponseEntity<String> saveRating(@RequestBody Rating rating){
         return ratingService.saveRating(rating);
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<Rating>> getRatingByUserId(@PathVariable UUID id){
+        return ratingService.getRatingByUserId(id);
     }
 }

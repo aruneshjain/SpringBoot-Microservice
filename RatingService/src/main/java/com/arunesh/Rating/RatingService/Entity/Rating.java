@@ -21,5 +21,7 @@ public class Rating {
     private UUID hotelId;
     private int rate;
     private String feedback;
+    @Transient
+    private Hotel hotel;
 
 }

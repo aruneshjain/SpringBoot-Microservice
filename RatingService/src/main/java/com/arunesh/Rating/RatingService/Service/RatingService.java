@@ -12,4 +12,6 @@ public interface RatingService {
     ResponseEntity<Rating> getRatings(UUID id);
 
     ResponseEntity<String> saveRating(Rating rating);
+
+    ResponseEntity<List<Rating>> getRatingByUserId(UUID id);
 }
