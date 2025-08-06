@@ -1,0 +1,46 @@
+package com.arunesh.Rating.RatingService.Service.ServiceImpl;
+
+import com.arunesh.Rating.RatingService.Entity.Rating;
+import com.arunesh.Rating.RatingService.Exception.RatingNotFoundException;
+import com.arunesh.Rating.RatingService.Repository.RatingRepository;
+import com.arunesh.Rating.RatingService.Service.RatingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class RatingServiceImpl implements RatingService {
+    @Autowired
+    RatingRepository ratingRepository;
+
+    @Override
+    public ResponseEntity<List<Rating>> getAllRatings() {
+        try {
+            List<Rating> rating = ratingRepository.findAll();
+            return new ResponseEntity<>(rating,HttpStatus.OK);
+        }catch (Exception ex){
+            throw new RatingNotFoundException("Rating not Available");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Rating> getRatings(UUID id) {
+        Rating rating = ratingRepository.findById(id)
+                .orElseThrow(()-> new RatingNotFoundException("Rating Not Available with ID :" + id));
+        return new ResponseEntity<>(rating,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<String> saveRating(Rating rating) {
+        try{
+            ratingRepository.save(rating);
+        }catch (Exception ex){
+            return new ResponseEntity<>("Rating not saved : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Rating Saved", HttpStatus.CREATED);
+    }
+}
