@@ -4,6 +4,7 @@ import com.arunesh.Rating.RatingService.Entity.Hotel;
 import com.arunesh.Rating.RatingService.Entity.Rating;
 import com.arunesh.Rating.RatingService.Exception.RatingNotFoundException;
 import com.arunesh.Rating.RatingService.Repository.RatingRepository;
+import com.arunesh.Rating.RatingService.Service.HotelService;
 import com.arunesh.Rating.RatingService.Service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,10 @@ import java.util.stream.Collectors;
 public class RatingServiceImpl implements RatingService {
     @Autowired
     RatingRepository ratingRepository;
+//    @Autowired
+//    RestTemplate restTemplate;
     @Autowired
-    RestTemplate restTemplate;
+    HotelService hotelService;
 
     @Override
     public ResponseEntity<List<Rating>> getAllRatings() {
@@ -56,9 +59,8 @@ public class RatingServiceImpl implements RatingService {
             List<Rating> rating = ratingRepository.findAllByUserId(id);
             if(!rating.isEmpty()) {
                 List<Rating> ratingWithHotel = rating.stream().map((R) -> {
-                    R.setHotel(restTemplate.getForEntity("http://HOTEL-SERVICE/hotel/" + R.getHotelId(),
-                            Hotel.class
-                    ).getBody());
+                // Feign Client Call for Hotel Service
+                    R.setHotel(hotelService.getHotel(R.getHotelId()));
                     return R;
                 }).toList();
                 return new ResponseEntity<>(ratingWithHotel, HttpStatus.OK);
