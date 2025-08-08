@@ -6,6 +6,7 @@ import com.arunesh.User.UserService.Exception.ResourceNotFoundException;
 import com.arunesh.User.UserService.Exception.UserNotFoundException;
 import com.arunesh.User.UserService.Repository.UserRepository;
 import com.arunesh.User.UserService.Service.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CircuitBreaker(name = "ratingHotelFallback", fallbackMethod = "ratingHotelFallback")
     public ResponseEntity<Users> getUser(UUID id) {
 
         Users user = userRepository.findById(id)
@@ -61,8 +64,14 @@ public class UserServiceImpl implements UserService {
             logger.info("{}", rating);
             user.setRating(rating);
             return new ResponseEntity<>(user,HttpStatus.OK);
-        }catch (RuntimeException ex){
-            throw new ResourceNotFoundException("Something went wrong in call Rating Service : " + ex);
+        }catch (Exception ex){
+            throw new RuntimeException();
         }
+    }
+
+    public ResponseEntity<Users> ratingHotelFallback(UUID id, Exception ex) {
+        Users user = Users.builder()
+                .about("Rating service is down please try after some time.").build();
+        return new ResponseEntity<>(user,HttpStatus.OK);
     }
 }

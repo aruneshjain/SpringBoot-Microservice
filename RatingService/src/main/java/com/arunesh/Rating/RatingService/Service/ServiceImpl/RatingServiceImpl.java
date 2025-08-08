@@ -6,6 +6,8 @@ import com.arunesh.Rating.RatingService.Exception.RatingNotFoundException;
 import com.arunesh.Rating.RatingService.Repository.RatingRepository;
 import com.arunesh.Rating.RatingService.Service.HotelService;
 import com.arunesh.Rating.RatingService.Service.RatingService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,6 +44,7 @@ public class RatingServiceImpl implements RatingService {
     public ResponseEntity<Rating> getRatings(UUID id) {
         Rating rating = ratingRepository.findById(id)
                 .orElseThrow(()-> new RatingNotFoundException("Rating Not Available with ID :" + id));
+
         return new ResponseEntity<>(rating,HttpStatus.OK);
     }
 
@@ -54,21 +59,30 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
+    @RateLimiter(name = "rateHotelFallback", fallbackMethod = "rateHotelFallback")
     public ResponseEntity<List<Rating>> getRatingByUserId(UUID id) {
+        List<Rating> rating;
         try {
-            List<Rating> rating = ratingRepository.findAllByUserId(id);
-            if(!rating.isEmpty()) {
-                List<Rating> ratingWithHotel = rating.stream().map((R) -> {
-                // Feign Client Call for Hotel Service
-                    R.setHotel(hotelService.getHotel(R.getHotelId()));
-                    return R;
-                }).toList();
-                return new ResponseEntity<>(ratingWithHotel, HttpStatus.OK);
-            }
-            else
-                return new ResponseEntity<>(rating,HttpStatus.OK);
+            rating = ratingRepository.findAllByUserId(id);
         }catch (RuntimeException ex){
             throw new RatingNotFoundException("Rating not Available : " + ex.getMessage());
         }
+        if(!rating.isEmpty()) {
+            List<Rating> ratingWithHotel = rating.stream().map((R) -> {
+                // Feign Client Call for Hotel Service
+                Hotel hotel = hotelService.getHotel(R.getHotelId());
+                R.setHotel(hotel);
+                return R;
+            }).toList();
+            return new ResponseEntity<>(ratingWithHotel, HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity<>(rating,HttpStatus.OK);
+    }
+    public ResponseEntity<List<Rating>> rateHotelFallback(UUID id, Throwable ex){
+        return new ResponseEntity<>(Collections.singletonList(
+                Rating.builder()
+                        .feedback("RateLimit : Too many Requests")
+                        .build()),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
