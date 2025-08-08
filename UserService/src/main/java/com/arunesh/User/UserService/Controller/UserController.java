@@ -1,11 +1,15 @@
 package com.arunesh.User.UserService.Controller;
 
+import com.arunesh.User.UserService.Entity.Rating;
 import com.arunesh.User.UserService.Entity.Users;
 import com.arunesh.User.UserService.Service.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +33,5 @@ public class UserController {
     public ResponseEntity<Users> getUser(@PathVariable UUID id){
         return userService.getUser(id);
     }
-
-//    @GetMapping
 
 }
