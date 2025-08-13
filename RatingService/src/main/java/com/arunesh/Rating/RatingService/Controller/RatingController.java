@@ -37,6 +37,11 @@ public class RatingController {
         return ratingService.saveRating(rating);
     }
 
+    @GetMapping("/hotel/{id}")
+    public ResponseEntity<List<Rating>> getRatingByHotelId(@PathVariable UUID id){
+        return ratingService.getRatingByHotelId(id);
+    }
+
     @GetMapping("/user/{id}")
 //    @CircuitBreaker(name = "ratingHotelBreaker",fallbackMethod = "ratingHotelFallback")
     @RateLimiter(name = "ratingRateLimiter", fallbackMethod = "ratingRateLimiter")

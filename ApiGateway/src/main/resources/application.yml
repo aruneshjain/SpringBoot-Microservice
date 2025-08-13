@@ -22,6 +22,24 @@ spring:
           uri: lb://HOTEL-SERVICE
           predicates:
             - Path=/hotel/**
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          auth0:
+#            client-id: 7k2sai4fb7MLlroYphhnoKyd8caz6yOr
+#            client-secret: WTP-msAWnki0Dk-bir14-10fktn02ADd-PP5rKCJvmSE9hxTwxLiZ1evcimtG0tk
+#            scope: openid, email, profile, offline_access
+#            authorization-grant-type: authorization_code
+#            redirect-uri: "{baseUrl}/login/oauth2/code/auth0"
+#
+#          provider:
+#            auth0:
+#              issuer-uri: https://dev-14lf0o7qll65uajn.us.auth0.com/
+#              jwk-set-uri: https://dev-14lf0o7qll65uajn.us.auth0.com/.well-known/jwks.json
+#
+#auth0:
+#  audience: https://dev-14lf0o7qll65uajn.us.auth0.com/api/v2/
 
 eureka:
   client:
@@ -31,4 +49,6 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
+
+
 
