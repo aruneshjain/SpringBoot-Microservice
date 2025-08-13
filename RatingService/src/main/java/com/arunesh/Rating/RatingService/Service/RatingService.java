@@ -14,4 +14,6 @@ public interface RatingService {
     ResponseEntity<String> saveRating(Rating rating);
 
     ResponseEntity<List<Rating>> getRatingByUserId(UUID id);
+
+    ResponseEntity<List<Rating>> getRatingByHotelId(UUID id);
 }

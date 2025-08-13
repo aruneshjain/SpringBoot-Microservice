@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, UUID> {
     List<Rating> findAllByUserId(UUID id);
+
+    List<Rating> findAllByHotelId(UUID id);
 }

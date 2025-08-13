@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,4 +22,7 @@ public class Hotel {
     private String name;
     private String location;
     private String about;
+
+    @Transient
+    private List<Rating> rating;
 }

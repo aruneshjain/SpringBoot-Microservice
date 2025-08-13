@@ -79,6 +79,18 @@ public class RatingServiceImpl implements RatingService {
         else
             return new ResponseEntity<>(rating,HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<List<Rating>> getRatingByHotelId(UUID id) {
+        List<Rating> rating;
+        try {
+            rating = ratingRepository.findAllByHotelId(id);
+        }catch (RuntimeException ex){
+            throw new RatingNotFoundException("Rating not Available : " + ex.getMessage());
+        }
+        return new ResponseEntity<>(rating,HttpStatus.OK);
+    }
+
     public ResponseEntity<List<Rating>> rateHotelFallback(UUID id, Throwable ex){
         return new ResponseEntity<>(Collections.singletonList(
                 Rating.builder()

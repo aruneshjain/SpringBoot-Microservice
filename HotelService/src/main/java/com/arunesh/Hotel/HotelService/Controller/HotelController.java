@@ -3,6 +3,7 @@ package com.arunesh.Hotel.HotelService.Controller;
 import com.arunesh.Hotel.HotelService.Entity.Hotel;
 import com.arunesh.Hotel.HotelService.Service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class HotelController {
         return hotelService.getAllHotel();
     }
 
-    @GetMapping("{id}")
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Hotel> getHotel(@PathVariable UUID id){
         return hotelService.getHotel(id);
     }
