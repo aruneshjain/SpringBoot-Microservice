@@ -1,4 +1,4 @@
-package com.arunesh.Hotel.HotelService.Exception;
+package com.arunesh.Hotel.HotelService.exception;
 
 import lombok.Data;
 

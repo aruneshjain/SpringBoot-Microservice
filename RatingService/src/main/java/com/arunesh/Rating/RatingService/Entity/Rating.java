@@ -24,6 +24,7 @@ public class Rating {
     private int rate;
     private String feedback;
     @Transient
+    private Users user;
+    @Transient
     private Hotel hotel;
-
 }
