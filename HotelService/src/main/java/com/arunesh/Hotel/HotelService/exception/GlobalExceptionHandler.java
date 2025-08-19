@@ -1,4 +1,4 @@
-package com.arunesh.Hotel.HotelService.Exception;
+package com.arunesh.Hotel.HotelService.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +11,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({HotelNotFoundException.class})
     public ResponseEntity<Object> handleUserNotFoundException(HotelNotFoundException ex){
         ErrorResponse error = new ErrorResponse("Not Found", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
+
+    @ExceptionHandler({CustomFileimportException.class})
+    public ResponseEntity<Object> handleCSVFileException(CustomFileimportException ex){
+        ErrorResponse error = new ErrorResponse("CSV Upload Fail", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error);

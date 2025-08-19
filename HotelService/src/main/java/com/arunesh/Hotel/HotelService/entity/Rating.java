@@ -1,4 +1,4 @@
-package com.arunesh.Hotel.HotelService.Entity;
+package com.arunesh.Hotel.HotelService.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

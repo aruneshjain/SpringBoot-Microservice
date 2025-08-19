@@ -24,6 +24,14 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
+    @ExceptionHandler({CSVFileException.class})
+    public ResponseEntity<Object> handleCSVFileException(CSVFileException ex){
+        ErrorResponse error = new ErrorResponse("CSV Upload Fail", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
+
 //    @ExceptionHandler({JwtInvalid.class})
 //    public ResponseEntity<Object> handleJwtInvalid(JwtInvalid ex){
 //        return ResponseEntity
